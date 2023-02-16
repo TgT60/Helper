@@ -1,7 +1,7 @@
 ﻿@model ForTestIdeas.Models.UserViewModel
 @{
 }
-<h1> Register Worker @ViewBag.something</h1>
+<h1> Register Worker @ViewBag.Key</h1>
 <form method="post" action="Login" class="mt-5">
     <div class="mb-3">
         <label for="exampleInputEmail1" class="form-label">Login</label>
@@ -11,6 +11,9 @@
         <label for="exampleInputEmail1" class="form-label">Password</label>
         <input type="text" class="form-control" asp-for="Password">
     </div>
+    <div class="mb-3">       
+        <input type="hidden" name ="authKey">
+    </div>
     <button type="submit" class="btn btn-primary">Submit</button>
-    
+
 </form>

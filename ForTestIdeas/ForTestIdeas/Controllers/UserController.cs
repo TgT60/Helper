@@ -23,6 +23,7 @@ namespace ForTestIdeas.Controllers
         private readonly IDataProtectionProvider _protectionProvider;
         private readonly ILogger<UserController> _logger;
         private readonly TestContext _dbContext;
+       
 
 
         public UserController(ILogger<UserController> logger, IDataProtectionProvider protectionProvider, TestContext dbContext)
@@ -33,10 +34,7 @@ namespace ForTestIdeas.Controllers
         }
 
         [HttpGet("Register")]
-        public IActionResult Register()
-        {
-            return View();
-        }
+        public IActionResult Register() => View();   
 
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromForm] UserViewModel userViewModel)
@@ -70,14 +68,11 @@ namespace ForTestIdeas.Controllers
         }
 
         [HttpGet("CreateEquipment")]
-        public IActionResult CreateEquipment()
-        {
-            return View();
-        }
+        public IActionResult CreateEquipment() => View(); 
 
         [HttpPost("CreateEquipment")]
         [UserAuthorization("adjuster,emploer")]
-        public async Task<IActionResult> CreateEquipment([FromForm] EquipmentViewModel equipmentViewModel, [FromQuery] string authKey = null)
+        public async Task<IActionResult> CreateEquipment([FromForm] EquipmentViewModel equipmentViewModel, [FromQuery]string authKey = null)
         {
             var equipment = new Equipment
             {
@@ -105,17 +100,14 @@ namespace ForTestIdeas.Controllers
         public ActionResult<IEnumerable<TestContext>> GetWorker([FromQuery] string authKey = null)
         {
             var workers = _dbContext.Users.ToList();
-            return View(workers);
+            return Ok(workers);
         }
 
-        [HttpGet("Login")]       
-        public IActionResult Login()
-        {
-            return View();        
-        }
+        [HttpGet("Login")]
+        public IActionResult Login() => View();      
 
         [HttpPost("Login")]  
-        public ActionResult<string> Login([FromForm] string userLogin, [FromForm] string userPassword)
+        public ActionResult<string> Login([FromForm] string userLogin, [FromForm] string userPassword )
         {
             var userInfo = _dbContext.Users.SingleOrDefault(x => x.Password == userPassword && x.Login == userLogin);
 
@@ -123,18 +115,15 @@ namespace ForTestIdeas.Controllers
             {
                 var key = JsonConvert.SerializeObject(userInfo);
                 var protector = _protectionProvider.CreateProtector("User-auth");
-                var ecnryptedKey = protector.Protect(key);          
-                return Ok(ecnryptedKey);        
+                var ecnryptedKey = protector.Protect(key);              
+                return Ok(ecnryptedKey);
             }
             return View();
         }
 
         [HttpGet("CreateServiceItem")]
-        public IActionResult CreateServiceItem()
-        {
-            return View();
-        }
-
+        public IActionResult CreateServiceItem() => View();
+       
         [HttpPost("CreateServiceItem")]
         [UserAuthorization("adjuster,emploer")]
         public async Task<IActionResult> CreateServiceItem([FromForm] ServiceItemViewModel serviceItemViewModel,[FromQuery] User userParam, [FromQuery] string authKey = null)
@@ -159,7 +148,6 @@ namespace ForTestIdeas.Controllers
             await _dbContext.TaskTikets.AddAsync(asigsTiket);
             await _dbContext.SaveChangesAsync();
             return Ok(item);
-
         }
     }
 }

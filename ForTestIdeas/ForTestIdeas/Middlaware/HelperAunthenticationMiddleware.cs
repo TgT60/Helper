@@ -4,6 +4,7 @@ using HelperAPI.Domain.Entities;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Session;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace ForTestIdeas.Middlaware
                     var user = JsonConvert.DeserializeObject<User>(decryptedKey);
                     var actualUser = _dbContext.Users.SingleOrDefault(x => x.Id == user.Id);
                     context.Items.Add("auth-key", actualUser);
+                    //context.Session.GetString("auth-key", actualUser);
                 }
                 catch (Exception)
                 {

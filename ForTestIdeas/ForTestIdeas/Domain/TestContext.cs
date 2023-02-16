@@ -15,7 +15,7 @@ namespace ForTestIdeas.Domain
         public DbSet<Equipment> Equipments { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<ServiceItem> ServiceItems { get; set; }
-        public DbSet<TaskTiket> TaskTikets { get; set; }
+        public DbSet<TaskTiket> TaskTikets { get; set; }   
 
         public TestContext()
         {
@@ -30,7 +30,6 @@ namespace ForTestIdeas.Domain
             base.OnModelCreating(modelBuilder);
 
         }
-        public DbSet<ForTestIdeas.Models.ServiceItemViewModel> ServiceItemViewModel { get; set; }
-        public DbSet<ForTestIdeas.Models.EquipmentViewModel> EquipmentViewModel { get; set; }
+      
     }
 }
