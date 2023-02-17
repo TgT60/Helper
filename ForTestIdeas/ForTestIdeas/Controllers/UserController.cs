@@ -62,17 +62,18 @@ namespace ForTestIdeas.Controllers
 
         [HttpGet("selectticket")]
         [UserAuthorization("adjuster")]
-        public ActionResult<IEnumerable<TestContext>> GetTicket([FromForm] ServiceItemViewModel serviceItemViewModel, [FromQuery] string authKey = null)
+        public ActionResult<IEnumerable<TestContext>> GetTicket([FromForm] ServiceItemViewModel serviceItemViewModel)
         {          
             return Ok(_dbContext.Users.Where(x => x.Role == "adjuster"));
         }
 
         [HttpGet("CreateEquipment")]
+        [UserAuthorization("adjuster,emploer")]
         public IActionResult CreateEquipment() => View(); 
 
         [HttpPost("CreateEquipment")]
         [UserAuthorization("adjuster,emploer")]
-        public async Task<IActionResult> CreateEquipment([FromForm] EquipmentViewModel equipmentViewModel, [FromQuery]string authKey = null)
+        public async Task<IActionResult> CreateEquipment([FromForm] EquipmentViewModel equipmentViewModel)
         {
             var equipment = new Equipment
             {
@@ -89,7 +90,7 @@ namespace ForTestIdeas.Controllers
 
         [HttpGet("GetEquipment")]
         [UserAuthorization("emploer")]
-        public ActionResult<IEnumerable<TestContext>> GetEquipment([FromQuery] string authKey = null)
+        public ActionResult<IEnumerable<TestContext>> GetEquipment()
         {
             var equipments = _dbContext.Equipments.ToList();
             return Ok(equipments);
@@ -97,7 +98,7 @@ namespace ForTestIdeas.Controllers
 
         [HttpGet("GetWorker")]
         [UserAuthorization("emploer")]
-        public ActionResult<IEnumerable<TestContext>> GetWorker([FromQuery] string authKey = null)
+        public ActionResult<IEnumerable<TestContext>> GetWorker()
         {
             var workers = _dbContext.Users.ToList();
             return Ok(workers);
@@ -128,7 +129,7 @@ namespace ForTestIdeas.Controllers
        
         [HttpPost("CreateServiceItem")]
         [UserAuthorization("adjuster")]
-        public async Task<IActionResult> CreateServiceItem([FromForm] ServiceItemViewModel serviceItemViewModel,[FromQuery] User userParam, [FromQuery] string authKey = null)
+        public async Task<IActionResult> CreateServiceItem([FromForm] ServiceItemViewModel serviceItemViewModel,[FromQuery] User userParam)
         {
             var user = _dbContext.Users.FirstOrDefault(x => x.Name == userParam.Name && x.SureName == userParam.SureName);
             var item = new ServiceItem
