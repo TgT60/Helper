@@ -30,6 +30,14 @@ namespace ForTestIdeas
             services.AddControllersWithViews();
             services.AddDbContext<TestContext>(item => item.UseSqlServer(Configuration.GetConnectionString("HelperDB")));
             services.AddScoped<HelperAunthenticationMiddleware>();
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(600);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -49,6 +57,8 @@ namespace ForTestIdeas
             app.UseStaticFiles();
 
             app.UseRouting();
+            
+            app.UseSession();
 
             app.UseMiddleware<HelperAunthenticationMiddleware>();
 

@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ForTestIdeas.Middlaware
@@ -29,8 +30,11 @@ namespace ForTestIdeas.Middlaware
             {
                 try
                 {
+                    
+                    var base64EncodedBytes = Convert.FromBase64String(key);
+                    var restoredKey = System.Text.Encoding.ASCII.GetString(base64EncodedBytes);
                     var protector = _protectionProvider.CreateProtector("User-auth");
-                    var decryptedKey = protector.Unprotect(key);
+                    var decryptedKey = protector.Unprotect(restoredKey);
                     var user = JsonConvert.DeserializeObject<User>(decryptedKey);
                     var actualUser = _dbContext.Users.SingleOrDefault(x => x.Id == user.Id);
                     context.Items.Add("auth-key", actualUser);

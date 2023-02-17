@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using HelperAPI.Domain.Entities;
 using Newtonsoft.Json;
@@ -115,16 +116,16 @@ namespace ForTestIdeas.Controllers
         }
 
         [HttpPost("Login")]  
-        public ActionResult<string> Login([FromForm] string userLogin, [FromForm] string userPassword)
+        public ActionResult<string> Login([FromForm] User user)
         {
-            var userInfo = _dbContext.Users.SingleOrDefault(x => x.Password == userPassword && x.Login == userLogin);
+            var userInfo = _dbContext.Users.SingleOrDefault(x => x.Password == user.Password && x.Login == user.Login);
 
             if (userInfo != null)
             {
                 var key = JsonConvert.SerializeObject(userInfo);
                 var protector = _protectionProvider.CreateProtector("User-auth");
-                var ecnryptedKey = protector.Protect(key);          
-                return Ok(ecnryptedKey);        
+                var ecnryptedKey = protector.Protect(key); 
+                HttpContext.Session.Set("authentication-key", Encoding.ASCII.GetBytes(ecnryptedKey));
             }
             return View();
         }

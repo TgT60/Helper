@@ -1,14 +1,21 @@
-﻿@model ForTestIdeas.Models.ServiceItemViewModel
+﻿@using System.Text
+@model ForTestIdeas.Models.ServiceItemViewModel
 
 @{
     ViewData["Title"] = "CreateServiceItem";
+}
+
+@{
+    Context.Session.TryGetValue("authentication-key", out var key);
+    string encodedKey="";
+    if (key != null) encodedKey = Convert.ToBase64String(key);
 }
 
 <h1>CreateServiceItem</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreateServiceItem">
+        <form asp-action="CreateServiceItem" asp-route-authKey=@encodedKey>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
