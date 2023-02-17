@@ -88,7 +88,7 @@ namespace ForTestIdeas.Controllers
         }
 
         [HttpGet("GetEquipment")]
-        [UserAuthorization("adjuster,emploer")]
+        [UserAuthorization("emploer")]
         public ActionResult<IEnumerable<TestContext>> GetEquipment([FromQuery] string authKey = null)
         {
             var equipments = _dbContext.Equipments.ToList();
@@ -96,7 +96,7 @@ namespace ForTestIdeas.Controllers
         }
 
         [HttpGet("GetWorker")]
-        [UserAuthorization("adjuster,emploer")]
+        [UserAuthorization("emploer")]
         public ActionResult<IEnumerable<TestContext>> GetWorker([FromQuery] string authKey = null)
         {
             var workers = _dbContext.Users.ToList();
@@ -107,25 +107,27 @@ namespace ForTestIdeas.Controllers
         public IActionResult Login() => View();      
 
         [HttpPost("Login")]  
-        public ActionResult<string> Login([FromForm] string userLogin, [FromForm] string userPassword )
+        public ActionResult<string> Login([FromForm] User userParam)
         {
-            var userInfo = _dbContext.Users.SingleOrDefault(x => x.Password == userPassword && x.Login == userLogin);
+            var userInfo = _dbContext.Users.SingleOrDefault(x => x.Password == userParam.Password && x.Login == userParam.Login);
 
             if (userInfo != null)
             {
                 var key = JsonConvert.SerializeObject(userInfo);
                 var protector = _protectionProvider.CreateProtector("User-auth");
-                var ecnryptedKey = protector.Protect(key);              
-                return Ok(ecnryptedKey);
+                var ecnryptedKey = protector.Protect(key);
+                HttpContext.Response.Cookies.Append("authKey", ecnryptedKey);
+                return RedirectToAction("Login");
             }
             return View();
         }
 
         [HttpGet("CreateServiceItem")]
+        [UserAuthorization("adjuster")]
         public IActionResult CreateServiceItem() => View();
        
         [HttpPost("CreateServiceItem")]
-        [UserAuthorization("adjuster,emploer")]
+        [UserAuthorization("adjuster")]
         public async Task<IActionResult> CreateServiceItem([FromForm] ServiceItemViewModel serviceItemViewModel,[FromQuery] User userParam, [FromQuery] string authKey = null)
         {
             var user = _dbContext.Users.FirstOrDefault(x => x.Name == userParam.Name && x.SureName == userParam.SureName);

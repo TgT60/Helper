@@ -26,7 +26,7 @@ namespace ForTestIdeas.Middlaware
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (context.Request.Query.TryGetValue("authKey", out var key) )
+            if (context.Request.Cookies.TryGetValue("authKey", out var key) )
             {
                 try
                 {
@@ -35,7 +35,7 @@ namespace ForTestIdeas.Middlaware
                     var user = JsonConvert.DeserializeObject<User>(decryptedKey);
                     var actualUser = _dbContext.Users.SingleOrDefault(x => x.Id == user.Id);
                     context.Items.Add("auth-key", actualUser);
-                    //context.Session.GetString("auth-key", actualUser);
+                    
                 }
                 catch (Exception)
                 {
