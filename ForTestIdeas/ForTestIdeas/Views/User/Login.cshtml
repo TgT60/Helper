@@ -1,16 +1,21 @@
 ﻿@model ForTestIdeas.Models.UserViewModel
 @{
+    ViewBag.Title = "Login";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h1> Register Worker @ViewBag.Key</h1>
-<form method="post" action="Login" class="mt-5">
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Login</label>
-        <input type="text" class="form-control" asp-for="Login">
-    </div>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Password</label>
-        <input type="text" class="form-control" asp-for="Password">
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-
-</form>
+<div class="container">
+    <main role="main" class="pb-3">
+        <h1>Login</h1>
+        <form method="post" action="Login" class="mt-5">
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Login</label>
+                <input type="text" class="form-control" asp-for="Login">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Password</label>
+                <input type="text" class="form-control" asp-for="Password">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </main>
+</div>

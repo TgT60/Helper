@@ -23,8 +23,6 @@ namespace ForTestIdeas.Controllers
         private readonly IDataProtectionProvider _protectionProvider;
         private readonly ILogger<UserController> _logger;
         private readonly TestContext _dbContext;
-       
-
 
         public UserController(ILogger<UserController> logger, IDataProtectionProvider protectionProvider, TestContext dbContext)
         {
@@ -34,7 +32,7 @@ namespace ForTestIdeas.Controllers
         }
 
         [HttpGet("Register")]
-        public IActionResult Register() => View();   
+        public IActionResult Register() => View();
 
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromForm] UserViewModel userViewModel)
@@ -60,16 +58,9 @@ namespace ForTestIdeas.Controllers
             return RedirectToAction("Login");
         }
 
-        [HttpGet("selectticket")]
-        [UserAuthorization("adjuster")]
-        public ActionResult<IEnumerable<TestContext>> GetTicket([FromForm] ServiceItemViewModel serviceItemViewModel)
-        {          
-            return Ok(_dbContext.Users.Where(x => x.Role == "adjuster"));
-        }
-
         [HttpGet("CreateEquipment")]
         [UserAuthorization("adjuster,emploer")]
-        public IActionResult CreateEquipment() => View(); 
+        public IActionResult CreateEquipment() => View();
 
         [HttpPost("CreateEquipment")]
         [UserAuthorization("adjuster,emploer")]
@@ -85,23 +76,7 @@ namespace ForTestIdeas.Controllers
 
             await _dbContext.Equipments.AddAsync(equipment);
             await _dbContext.SaveChangesAsync();
-            return Ok(equipment);
-        }
-
-        [HttpGet("GetEquipment")]
-        [UserAuthorization("emploer")]
-        public ActionResult<IEnumerable<TestContext>> GetEquipment()
-        {
-            var equipments = _dbContext.Equipments.ToList();
-            return Ok(equipments);
-        }
-
-        [HttpGet("GetWorker")]
-        [UserAuthorization("emploer")]
-        public ActionResult<IEnumerable<TestContext>> GetWorker()
-        {
-            var workers = _dbContext.Users.ToList();
-            return Ok(workers);
+            return View(equipment);
         }
 
         [HttpGet("Login")]
@@ -152,5 +127,22 @@ namespace ForTestIdeas.Controllers
             await _dbContext.SaveChangesAsync();
             return Ok(item);
         }
+
+        [HttpGet("GetEquipment")]
+        [UserAuthorization("emploer")]
+        public ActionResult<IEnumerable<TestContext>> GetEquipment()
+        {
+            var equipments = _dbContext.Equipments.ToList();
+            return View();
+        }
+
+        [HttpGet("GetWorker")]
+        [UserAuthorization("emploer")]
+        public ActionResult<IEnumerable<TestContext>> GetWorker()
+        {
+            var workers = _dbContext.Users.ToList();
+            return View(workers);
+        }
+
     }
 }
