@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using HelperAPI.Domain.Entities;
+using ForTestIdeas.Domain.Entities;
 using ForTestIdeas.Models;
 
 namespace ForTestIdeas.Domain

@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@{
+    @ViewBag.MyCookies;
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <title>@ViewBag.Title</title>
@@ -7,14 +11,14 @@
    
 </head>
 <body>
-    <header>
-        @await Html.PartialAsync("HeaderPartial")
-    </header>
+<header>
+    @await Html.PartialAsync("HeaderPartial")
+</header>
        @RenderBody()
     <footer class="border-top footer text-muted">
         @await Html.PartialAsync("FooterPartial")
     </footer>
     @await Html.PartialAsync("ScriptsPartial")
-    @RenderSection("Scripts", required: false)
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HelperAPI.Domain.Entities;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.DataProtection;
@@ -13,6 +12,7 @@ using ForTestIdeas.ActionFilters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using ForTestIdeas.Domain.Entities;
 
 namespace ForTestIdeas.Controllers
 {
@@ -76,11 +76,15 @@ namespace ForTestIdeas.Controllers
 
             await _dbContext.Equipments.AddAsync(equipment);
             await _dbContext.SaveChangesAsync();
-            return View(equipment);
+            return View();
         }
 
         [HttpGet("Login")]
-        public IActionResult Login() => View();      
+        public IActionResult Login()
+        {
+            return  View();  
+        }
+        
 
         [HttpPost("Login")]  
         public ActionResult<string> Login([FromForm] User userParam)
@@ -91,20 +95,43 @@ namespace ForTestIdeas.Controllers
             {
                 var key = JsonConvert.SerializeObject(userInfo);
                 var protector = _protectionProvider.CreateProtector("User-auth");
-                var ecnryptedKey = protector.Protect(key);
-                HttpContext.Response.Cookies.Append("authKey", ecnryptedKey);
+                var encryptedKey = protector.Protect(key);
+                HttpContext.Response.Cookies.Append("authKey", encryptedKey);
                 return RedirectToAction("Login");
             }
+            
             return View();
         }
 
         [HttpGet("CreateServiceItem")]
         [UserAuthorization("adjuster")]
-        public IActionResult CreateServiceItem() => View();
+        public IActionResult CreateServiceItem()
+        {
+            User forMaks = new User();
+            
+            
+            var userName = _dbContext.Users.ToList();
+            List<string> name = new List<string>();
+            foreach (User user in userName)
+            {
+                name.Add(user.Name);           
+            };
+            ViewBag.Name = name;
+
+            List<string> sureName = new List<string>();
+            foreach (User user in userName)
+            {
+                sureName.Add(user.SureName);
+            };
+            ViewBag.SureName = sureName;
+
+            return View();
+        }
+      
        
         [HttpPost("CreateServiceItem")]
         [UserAuthorization("adjuster")]
-        public async Task<IActionResult> CreateServiceItem([FromForm] ServiceItemViewModel serviceItemViewModel,[FromQuery] User userParam)
+        public async Task<IActionResult> CreateServiceItem([FromForm] ServiceItemViewModel serviceItemViewModel,[FromForm] User userParam)
         {
             var user = _dbContext.Users.FirstOrDefault(x => x.Name == userParam.Name && x.SureName == userParam.SureName);
             var item = new ServiceItem
@@ -115,7 +142,7 @@ namespace ForTestIdeas.Controllers
                 LongDescripton = serviceItemViewModel.LongDescripton
             };
 
-            var asigsTiket = new TaskTiket
+            var assignTicket = new TaskTiket
             {
                 Id = Guid.NewGuid(),            
                 ServiceItemId = item.Id,
@@ -123,10 +150,11 @@ namespace ForTestIdeas.Controllers
             };          
 
             await _dbContext.ServiceItems.AddAsync(item);
-            await _dbContext.TaskTikets.AddAsync(asigsTiket);
+            await _dbContext.TaskTikets.AddAsync(assignTicket);
             await _dbContext.SaveChangesAsync();
             return Ok(item);
         }
+        
 
         [HttpGet("GetEquipment")]
         [UserAuthorization("emploer")]

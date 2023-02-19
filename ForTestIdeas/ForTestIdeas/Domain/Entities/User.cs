@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HelperAPI.Domain.Entities
+namespace ForTestIdeas.Domain.Entities
 {
     public class User
     {
@@ -24,6 +24,6 @@ namespace HelperAPI.Domain.Entities
         public ICollection<Equipment> EquipmentId { get; set; }
 
         public ICollection<TaskTiket> TaskTikets { get; set; }
-
+        
     }
 }

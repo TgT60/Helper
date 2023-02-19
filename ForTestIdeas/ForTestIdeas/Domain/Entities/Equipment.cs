@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace HelperAPI.Domain.Entities
+namespace ForTestIdeas.Domain.Entities
 {
     public class Equipment
     {
