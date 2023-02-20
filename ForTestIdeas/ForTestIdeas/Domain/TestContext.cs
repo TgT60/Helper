@@ -15,8 +15,7 @@ namespace ForTestIdeas.Domain
         public DbSet<Equipment> Equipments { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<ServiceItem> ServiceItems { get; set; }
-        public DbSet<TaskTiket> TaskTikets { get; set; }   
-
+        public DbSet<TaskTiket> TaskTikets { get; set; }
         public TestContext()
         {
 
@@ -25,11 +24,6 @@ namespace ForTestIdeas.Domain
         { 
         
         }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-        }
-      
+        
     }
 }

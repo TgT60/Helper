@@ -1,7 +1,7 @@
-﻿@using Microsoft.AspNetCore.Http
+﻿
 @{
     Context.Request.Cookies.TryGetValue("authKey", out var key);
-    var login = key;
+    Context.Request.Cookies.TryGetValue("Name", out var name);
 }
 
 <div class="container">
@@ -18,7 +18,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        @if (login == null)
+                        @if (key == null)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Register">Register</a>
@@ -36,6 +36,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="CreateServiceItem">CreateServiceItem</a>
                         </li>
+                        @if (key != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="UserProfile">UserProfile</a>
+                            </li>   
+                            @name
+                        }
                     </ul>
                 </div>
             </div>

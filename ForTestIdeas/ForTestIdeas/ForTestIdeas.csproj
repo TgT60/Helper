@@ -25,4 +25,21 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="Views\User\GetEquipment.cshtml" />
+    <Content Remove="Interfases\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Interfases\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Interfases\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Interfases\**" />
+  </ItemGroup>
+
 </Project>

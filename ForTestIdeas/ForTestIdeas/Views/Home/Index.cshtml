@@ -1,8 +1,16 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    Context.Request.Cookies.TryGetValue("Name", out var Name);
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome To IntegralHelper</h1>
-   
-</div>
+@if(Name != null)
+{
+    <div class="text-center">
+        <h1 class="display-4">Welcome,@Name</h1>
+    </div>
+}
+else
+{
+    <div class="text-center">
+        <h1 class="display-4">Please login or Register</h1>
+    </div>
+}

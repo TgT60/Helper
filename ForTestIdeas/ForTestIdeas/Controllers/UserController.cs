@@ -41,7 +41,6 @@ namespace ForTestIdeas.Controllers
             {
                 return BadRequest();
             }
-
             var userInfo = new User()
             {
                 Id = Guid.NewGuid(),
@@ -82,9 +81,8 @@ namespace ForTestIdeas.Controllers
         [HttpGet("Login")]
         public IActionResult Login()
         {
-            return  View();  
+            return View();  
         }
-        
 
         [HttpPost("Login")]  
         public ActionResult<string> Login([FromForm] User userParam)
@@ -96,65 +94,74 @@ namespace ForTestIdeas.Controllers
                 var key = JsonConvert.SerializeObject(userInfo);
                 var protector = _protectionProvider.CreateProtector("User-auth");
                 var encryptedKey = protector.Protect(key);
+                HttpContext.Response.Cookies.Append("Name", userInfo.Name);
                 HttpContext.Response.Cookies.Append("authKey", encryptedKey);
                 return RedirectToAction("Login");
             }
-            
             return View();
         }
+        
+        [HttpGet("UserProfile")] 
+        [UserAuthorization("adjuster,emploer")]
+        public ActionResult<string> UserProfile()
+        {
+            GetNameAndSureName();
+            return View();
+        }
+        
+        [HttpGet("Logout")] 
+        [UserAuthorization("adjuster,emploer")]
+        public ActionResult<string> Logout()
+        {
+            return View();
+        }
+        
 
         [HttpGet("CreateServiceItem")]
         [UserAuthorization("adjuster")]
         public IActionResult CreateServiceItem()
         {
-            User forMaks = new User();
-            
-            
             var userName = _dbContext.Users.ToList();
-            List<string> name = new List<string>();
-            foreach (User user in userName)
-            {
-                name.Add(user.Name);           
-            };
+            
+            var name = userName.Select(user => user.Name).ToList();
             ViewBag.Name = name;
-
-            List<string> sureName = new List<string>();
-            foreach (User user in userName)
-            {
-                sureName.Add(user.SureName);
-            };
+            var sureName = userName.Select(user => user.SureName).ToList();
             ViewBag.SureName = sureName;
-
+            
             return View();
         }
-      
-       
+
         [HttpPost("CreateServiceItem")]
         [UserAuthorization("adjuster")]
-        public async Task<IActionResult> CreateServiceItem([FromForm] ServiceItemViewModel serviceItemViewModel,[FromForm] User userParam)
+        public async Task<IActionResult> CreateServiceItem([FromForm] ServiceItemViewModel serviceItemViewModel, [FromForm] User userParam)
         {
             var user = _dbContext.Users.FirstOrDefault(x => x.Name == userParam.Name && x.SureName == userParam.SureName);
-            var item = new ServiceItem
+            if (user != null)
             {
-                Id = Guid.NewGuid(),
-                Title = serviceItemViewModel.Title,
-                ShortDescription = serviceItemViewModel.ShortDescription,
-                LongDescripton = serviceItemViewModel.LongDescripton
-            };
+                var item = new ServiceItem
+                {
+                    Id = Guid.NewGuid(),
+                    Title = serviceItemViewModel.Title,
+                    ShortDescription = serviceItemViewModel.ShortDescription,
+                    LongDescripton = serviceItemViewModel.LongDescripton
+                };
 
-            var assignTicket = new TaskTiket
-            {
-                Id = Guid.NewGuid(),            
-                ServiceItemId = item.Id,
-                UserId = user.Id
-            };          
+                var assignTicket = new TaskTiket
+                {
+                    Id = Guid.NewGuid(),
+                    ServiceItemId = item.Id,
+                    UserId = user.Id
+                };
 
-            await _dbContext.ServiceItems.AddAsync(item);
-            await _dbContext.TaskTikets.AddAsync(assignTicket);
-            await _dbContext.SaveChangesAsync();
-            return Ok(item);
+                await _dbContext.ServiceItems.AddAsync(item);
+                await _dbContext.TaskTikets.AddAsync(assignTicket);
+                await _dbContext.SaveChangesAsync();
+                return Ok(item);
+            }
+
+            return Ok();
         }
-        
+
 
         [HttpGet("GetEquipment")]
         [UserAuthorization("emploer")]
@@ -171,6 +178,17 @@ namespace ForTestIdeas.Controllers
             var workers = _dbContext.Users.ToList();
             return View(workers);
         }
-
+        
+        public  void GetNameAndSureName()
+        {
+            HttpContext.Request.Cookies.TryGetValue("authKey", out var name);
+            var protector = _protectionProvider.CreateProtector("User-auth");
+            var decryptedKey = protector.Unprotect(name);
+            var user = JsonConvert.DeserializeObject<User>(decryptedKey);
+            var userSureName = user.SureName;
+            var userName = user.Name;
+            ViewBag.UserSureName = userSureName;
+            ViewBag.UserName = userName;
+        }
     }
 }
