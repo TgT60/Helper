@@ -85,7 +85,7 @@ namespace ForTestIdeas.Controllers
         }
 
         [HttpPost("Login")]  
-        public ActionResult<string> Login([FromForm] User userParam)
+        public IActionResult Login([FromForm] User userParam)
         {
             var userInfo = _dbContext.Users.SingleOrDefault(x => x.Password == userParam.Password && x.Login == userParam.Login);
 
@@ -103,7 +103,7 @@ namespace ForTestIdeas.Controllers
         
         [HttpGet("UserProfile")] 
         [UserAuthorization("adjuster,emploer")]
-        public ActionResult<string> UserProfile()
+        public IActionResult UserProfile()
         {
             GetNameAndSureName();
             return View();
@@ -111,14 +111,13 @@ namespace ForTestIdeas.Controllers
         
         [HttpGet("Logout")] 
         [UserAuthorization("adjuster,emploer")]
-        public ActionResult<string> Logout()
+        public IActionResult Logout()
         {
             return View();
         }
         
-
         [HttpGet("CreateServiceItem")]
-        [UserAuthorization("adjuster")]
+        [UserAuthorization("adjuster,emploer")]
         public IActionResult CreateServiceItem()
         {
             var userName = _dbContext.Users.ToList();
@@ -132,7 +131,7 @@ namespace ForTestIdeas.Controllers
         }
 
         [HttpPost("CreateServiceItem")]
-        [UserAuthorization("adjuster")]
+        [UserAuthorization("adjuster,emploer")]
         public async Task<IActionResult> CreateServiceItem([FromForm] ServiceItemViewModel serviceItemViewModel, [FromForm] User userParam)
         {
             var user = _dbContext.Users.FirstOrDefault(x => x.Name == userParam.Name && x.SureName == userParam.SureName);
@@ -158,14 +157,13 @@ namespace ForTestIdeas.Controllers
                 await _dbContext.SaveChangesAsync();
                 return Ok(item);
             }
-
+            
             return Ok();
         }
-
-
+        
         [HttpGet("GetEquipment")]
         [UserAuthorization("emploer")]
-        public ActionResult<IEnumerable<TestContext>> GetEquipment()
+        public IActionResult GetEquipment()
         {
             var equipments = _dbContext.Equipments.ToList();
             return View();
@@ -173,22 +171,50 @@ namespace ForTestIdeas.Controllers
 
         [HttpGet("GetWorker")]
         [UserAuthorization("emploer")]
-        public ActionResult<IEnumerable<TestContext>> GetWorker()
+        public IActionResult GetWorker()
         {
             var workers = _dbContext.Users.ToList();
             return View(workers);
         }
-        
-        public  void GetNameAndSureName()
+
+        [HttpGet("CheckTicket")]
+        [UserAuthorization("adjuster,emploer")]
+        public IActionResult CheckTicket()
+        {
+            var user = GetUser();
+            var userTicket = from users in _dbContext.Users
+                where users.Id == user.Id
+                join taskTikets in _dbContext.TaskTikets on users.Id equals taskTikets.UserId
+                join serviceItems in _dbContext.ServiceItems on taskTikets.ServiceItemId equals serviceItems.Id
+                select new ServiceItemViewModel()
+                {
+                    Title = serviceItems.Title,
+                    ShortDescription = serviceItems.ShortDescription,
+                    LongDescripton = serviceItems.LongDescripton,
+                    Name = users.Name,
+                    SureName = users.SureName
+                };
+            
+            var userTask = userTicket.ToList();
+            return View(userTask);
+        }
+  
+        public void GetNameAndSureName()
+        {
+            var user = GetUser();
+            var userSureName = user.SureName;
+            var userName = user.Name;
+            ViewBag.UserSureName = userSureName;
+            ViewBag.UserName = userName;
+        }
+
+        public User GetUser()
         {
             HttpContext.Request.Cookies.TryGetValue("authKey", out var name);
             var protector = _protectionProvider.CreateProtector("User-auth");
             var decryptedKey = protector.Unprotect(name);
             var user = JsonConvert.DeserializeObject<User>(decryptedKey);
-            var userSureName = user.SureName;
-            var userName = user.Name;
-            ViewBag.UserSureName = userSureName;
-            ViewBag.UserName = userName;
+            return user;
         }
     }
 }

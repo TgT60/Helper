@@ -36,7 +36,6 @@ namespace ForTestIdeas.Middlaware
                     var user = JsonConvert.DeserializeObject<User>(decryptedKey);
                     var actualUser = _dbContext.Users.SingleOrDefault(x => x.Id == user.Id);
                     context.Items.Add("auth-key", actualUser);
-                    
                 }
                 catch (Exception)
                 {

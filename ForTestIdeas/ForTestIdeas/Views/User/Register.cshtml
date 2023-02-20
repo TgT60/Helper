@@ -7,23 +7,23 @@
         <h1> Register Worker</h1>
         <form method="post" action="Register" class="mt-5">
             <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Login</label>
+                <label class="form-label">Login</label>
                 <input type="text" class="form-control" asp-for="Login">
             </div>
             <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Password</label>
-                <input type="text" class="form-control" asp-for="Password">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" asp-for="Password">
             </div>
             <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Name</label>
+                <label class="form-label">Name</label>
                 <input type="text" class="form-control" asp-for="Name">
             </div>
             <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">SureName</label>
+                <label class="form-label">SureName</label>
                 <input type="text" class="form-control" asp-for="SureName">
             </div>
             <div class="mb-3">
-                <label for="exampleInputEmail1">Role</label>
+                <label>Role</label>
                 <select id="Role" name="Role" class="form-control">
                     <option>adjuster</option>
                     <option>emploer</option>
@@ -31,7 +31,7 @@
                 <span asp-validation-for="Role" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">PersonImg</label>
+                <label class="form-label">PersonImg</label>
                 <input type="text" class="form-control" asp-for="PersonImg">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>

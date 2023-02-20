@@ -1,0 +1,54 @@
+﻿@model IEnumerable<ForTestIdeas.Models.ServiceItemViewModel>
+
+@{
+  
+}
+
+<div class="container">
+    <main role="main" class="pb-3">
+    <h1>CheckTicket</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LongDescripton)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShortDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SureName)
+            </th>
+            
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        { <tr>
+            <td>
+                @Html.DisplayFor(model => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.LongDescripton)
+            </td>
+              <td>
+                  @Html.DisplayFor(model => item.ShortDescription)
+              </td>
+              <td>
+                  @Html.DisplayFor(model => item.Name)
+              </td>
+              <td>
+                  @Html.DisplayFor(model => item.SureName)
+              </td>
+          </tr>
+        }
+        </tbody>
+    </table>
+    </main>
+</div>

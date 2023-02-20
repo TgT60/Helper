@@ -36,12 +36,20 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="CreateServiceItem">CreateServiceItem</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="CheckTicket">CheckTicket</a>
+                        </li>
                         @if (key != null)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="UserProfile">UserProfile</a>
                             </li>   
-                            @name
+                            <div class="nav-link text-dark" style="margin-left: 200px;">
+                                Hello @name
+                            </div>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
+                            </li> 
                         }
                     </ul>
                 </div>
