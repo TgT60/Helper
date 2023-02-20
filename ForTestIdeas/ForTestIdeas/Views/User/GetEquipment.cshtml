@@ -1,0 +1,42 @@
+﻿@model IEnumerable<ForTestIdeas.Domain.Entities.Equipment>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <main role="main" class="pb-3">
+    <h1>CheckTicket</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Img)
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        { <tr>
+              <td>
+                  @Html.DisplayFor(model => item.Title)
+              </td>
+              <td>
+                  @Html.DisplayFor(model => item.Description)
+              </td>
+              <td>
+                  @Html.DisplayFor(model => item.Img)
+              </td>
+          </tr>
+        }
+        </tbody>
+    </table>
+    </main>
+</div>

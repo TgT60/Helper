@@ -16,21 +16,25 @@ using ForTestIdeas.Domain.Entities;
 
 namespace ForTestIdeas.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
     public class UserController : Controller
     {
         private readonly IDataProtectionProvider _protectionProvider;
         private readonly ILogger<UserController> _logger;
         private readonly TestContext _dbContext;
 
-        public UserController(ILogger<UserController> logger, IDataProtectionProvider protectionProvider, TestContext dbContext)
+        public UserController(ILogger<UserController> logger, IDataProtectionProvider protectionProvider,
+            TestContext dbContext)
         {
             _logger = logger;
             _protectionProvider = protectionProvider;
-            this._dbContext = dbContext;
+            _dbContext = dbContext;
         }
-
+        
+        public IActionResult Index()
+        {
+            return View();
+        }
+        
         [HttpGet("Register")]
         public IActionResult Register() => View();
 
@@ -41,6 +45,7 @@ namespace ForTestIdeas.Controllers
             {
                 return BadRequest();
             }
+
             var userInfo = new User()
             {
                 Id = Guid.NewGuid(),
@@ -57,37 +62,17 @@ namespace ForTestIdeas.Controllers
             return RedirectToAction("Login");
         }
 
-        [HttpGet("CreateEquipment")]
-        [UserAuthorization("adjuster,emploer")]
-        public IActionResult CreateEquipment() => View();
-
-        [HttpPost("CreateEquipment")]
-        [UserAuthorization("adjuster,emploer")]
-        public async Task<IActionResult> CreateEquipment([FromForm] EquipmentViewModel equipmentViewModel)
-        {
-            var equipment = new Equipment
-            {
-                Id = Guid.NewGuid(),
-                Title = equipmentViewModel.Title,
-                Description = equipmentViewModel.Description,
-                Img = equipmentViewModel.Img
-            };
-
-            await _dbContext.Equipments.AddAsync(equipment);
-            await _dbContext.SaveChangesAsync();
-            return View();
-        }
-
         [HttpGet("Login")]
         public IActionResult Login()
         {
-            return View();  
+            return View();
         }
 
-        [HttpPost("Login")]  
+        [HttpPost("Login")]
         public IActionResult Login([FromForm] User userParam)
         {
-            var userInfo = _dbContext.Users.SingleOrDefault(x => x.Password == userParam.Password && x.Login == userParam.Login);
+            var userInfo =
+                _dbContext.Users.SingleOrDefault(x => x.Password == userParam.Password && x.Login == userParam.Login);
 
             if (userInfo != null)
             {
@@ -96,16 +81,44 @@ namespace ForTestIdeas.Controllers
                 var encryptedKey = protector.Protect(key);
                 HttpContext.Response.Cookies.Append("Name", userInfo.Name);
                 HttpContext.Response.Cookies.Append("authKey", encryptedKey);
-                return RedirectToAction("Login");
+                return RedirectToAction("UserProfile");
             }
             return View();
         }
-        
+
+        [HttpGet("CreateEquipment")]
+        [UserAuthorization("adjuster")]
+        public IActionResult CreateEquipment()
+        { 
+            GetUserInfo();
+            return View();
+        }
+
+        [HttpPost("CreateEquipment")]
+        [UserAuthorization("adjuster")]
+        public async Task<IActionResult> CreateEquipment([FromForm] EquipmentViewModel equipmentViewModel)
+        {
+            GetUserInfo();
+            var user = GetUser();
+            var equipment = new Equipment
+            {
+                Id = Guid.NewGuid(),
+                Title = equipmentViewModel.Title,
+                Description = equipmentViewModel.Description,
+                Img = equipmentViewModel.Img,
+                UserId =user.Id 
+            };
+
+            await _dbContext.Equipments.AddAsync(equipment);
+            await _dbContext.SaveChangesAsync();
+            return View();
+        }
+       
         [HttpGet("UserProfile")] 
         [UserAuthorization("adjuster,emploer")]
         public IActionResult UserProfile()
         {
-            GetNameAndSureName();
+            GetUserInfo();
             return View();
         }
         
@@ -113,13 +126,15 @@ namespace ForTestIdeas.Controllers
         [UserAuthorization("adjuster,emploer")]
         public IActionResult Logout()
         {
+            GetUserInfo();
             return View();
         }
         
         [HttpGet("CreateServiceItem")]
-        [UserAuthorization("adjuster,emploer")]
+        [UserAuthorization("emploer")]
         public IActionResult CreateServiceItem()
         {
+            GetUserInfo();
             var userName = _dbContext.Users.ToList();
             
             var name = userName.Select(user => user.Name).ToList();
@@ -131,9 +146,10 @@ namespace ForTestIdeas.Controllers
         }
 
         [HttpPost("CreateServiceItem")]
-        [UserAuthorization("adjuster,emploer")]
+        [UserAuthorization("emploer")]
         public async Task<IActionResult> CreateServiceItem([FromForm] ServiceItemViewModel serviceItemViewModel, [FromForm] User userParam)
         {
+            GetUserInfo();
             var user = _dbContext.Users.FirstOrDefault(x => x.Name == userParam.Name && x.SureName == userParam.SureName);
             if (user != null)
             {
@@ -155,32 +171,37 @@ namespace ForTestIdeas.Controllers
                 await _dbContext.ServiceItems.AddAsync(item);
                 await _dbContext.TaskTikets.AddAsync(assignTicket);
                 await _dbContext.SaveChangesAsync();
-                return Ok(item);
+                return RedirectToAction("UserProfile");
             }
             
-            return Ok();
+            return RedirectToAction("CreateServiceItem");
         }
         
         [HttpGet("GetEquipment")]
-        [UserAuthorization("emploer")]
+        [UserAuthorization("adjuster,emploer")]
         public IActionResult GetEquipment()
         {
-            var equipments = _dbContext.Equipments.ToList();
-            return View();
+            GetUserInfo();
+            var user = GetUser();
+            var equipments = _dbContext.Equipments.Where(x=> x.UserId == user.Id).ToList();
+            return View(equipments);
         }
 
         [HttpGet("GetWorker")]
         [UserAuthorization("emploer")]
         public IActionResult GetWorker()
         {
-            var workers = _dbContext.Users.ToList();
+            GetUserInfo();
+            var user = GetUser();
+            var workers = _dbContext.Users.Where(x=>x.Role !=user.Role ).ToList();
             return View(workers);
         }
 
         [HttpGet("CheckTicket")]
-        [UserAuthorization("adjuster,emploer")]
+        [UserAuthorization("adjuster")]
         public IActionResult CheckTicket()
         {
+            GetUserInfo();
             var user = GetUser();
             var userTicket = from users in _dbContext.Users
                 where users.Id == user.Id
@@ -199,15 +220,14 @@ namespace ForTestIdeas.Controllers
             return View(userTask);
         }
   
-        public void GetNameAndSureName()
+        public void GetUserInfo()
         {
             var user = GetUser();
-            var userSureName = user.SureName;
-            var userName = user.Name;
-            ViewBag.UserSureName = userSureName;
-            ViewBag.UserName = userName;
+            ViewBag.UserSureName = user.SureName;
+            ViewBag.UserName = user.Name;
+            ViewBag.Role = user.Role;
         }
-
+        
         public User GetUser()
         {
             HttpContext.Request.Cookies.TryGetValue("authKey", out var name);

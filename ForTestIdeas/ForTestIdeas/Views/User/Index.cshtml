@@ -1,11 +1,12 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
-    Context.Request.Cookies.TryGetValue("Name", out var Name);
+    Context.Request.Cookies.TryGetValue("Name", out var name);
+    Context.Request.Cookies.TryGetValue("authKey", out var key);
 }
-@if(Name != null)
+@if(name != null)
 {
     <div class="text-center">
-        <h1 class="display-4">Welcome,@Name</h1>
+        <h1 class="display-4">Welcome,@name</h1>
     </div>
 }
 else
@@ -13,4 +14,5 @@ else
     <div class="text-center">
         <h1 class="display-4">Please login or Register</h1>
     </div>
+   
 }
