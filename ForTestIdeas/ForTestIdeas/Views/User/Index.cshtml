@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Context.Request.Cookies.TryGetValue("Name", out var name);
+    Context.Request.Cookies.TryGetValue("authKey", out var key);
+}
+@if(name != null)
+{
+    <div class="text-center">
+        <h1 class="display-4">Welcome,@name</h1>
+    </div>
+}
+else
+{
+    <div class="text-center">
+        <h1 class="display-4">Please login or Register</h1>
+    </div>
+   
+}

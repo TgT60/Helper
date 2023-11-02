@@ -1,0 +1,49 @@
+﻿@model IEnumerable<ForTestIdeas.Domain.Entities.User>
+
+@{
+    ViewBag.Title = "GetWorker";
+}
+
+<div class="container">
+    <main role="main" class="pb-3">
+        <h1>GetWorker</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Role)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SureName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PersonImg)
+                    </th>
+                  
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Role)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SureName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PersonImg)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </main>
+</div>

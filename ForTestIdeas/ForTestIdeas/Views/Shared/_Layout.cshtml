@@ -1,0 +1,24 @@
+﻿
+@{
+    @ViewBag.MyCookies;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>@ViewBag.Title</title>
+    @await Html.PartialAsync("MetategsPartial")
+    @await Html.PartialAsync("CssPartial")
+   
+</head>
+<body>
+<header>
+    @await Html.PartialAsync("HeaderPartial")
+</header>
+       @RenderBody()
+    <footer class="border-top footer text-muted">
+        @await Html.PartialAsync("FooterPartial")
+    </footer>
+    @await Html.PartialAsync("ScriptsPartial")
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
